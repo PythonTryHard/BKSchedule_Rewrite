@@ -1,5 +1,7 @@
 # BKSchedule Rewrite - Viết bởi SV Bách Khoa cho SV Bách Khoa
-Vì gần đây app `BKSchedule` sập do nghi vấn bán thông tin SV và "thâm nhập hệ thống", `BKSchedule Rewrite` ra đời với mục đích mang lại sự tiện lợi trong việc tìm thời khoá biểu của sinh viên Đại học Bách Khoa mà vẫn giữ dược sự bảo mật của thông tin đăng nhập hệ thống trường
+Vì gần đây app `BKSchedule` sập do nghi vấn bán thông tin SV và "thâm nhập hệ thống", `BKSchedule Rewrite` ra đời với mục đích mang lại sự tiện lợi trong việc tìm thời khoá biểu của sinh viên Đại học Bách Khoa mà vẫn giữ dược sự bảo mật của thông tin đăng nhập hệ thống trường.
+
+Phần mềm nguồn mở theo bản quyền GNU GPL v3.0
 
 ## Tính năng
 * Thời gian tìm thời khoá biểu nhanh (~5 giây) nhờ bỏ qua các bước load hình ảnh, JS, vv.

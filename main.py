@@ -41,6 +41,8 @@ print(
 0------------------------0
 |                        |
 |   BKSchedule Rewrite   |
+|   Copyright (C) 2019   |
+|      GNU GPL v3.0      |
 |                        |
 |  Coder: PythonTryHard  |
 |  Lang : Python 3       |
