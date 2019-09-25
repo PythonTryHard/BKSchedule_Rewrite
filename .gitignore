@@ -1,0 +1,6 @@
+credential.json
+__pycache__
+.vscode
+build
+dist
+*.spec
