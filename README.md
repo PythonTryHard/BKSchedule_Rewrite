@@ -23,3 +23,5 @@ Giả định bạn biết cách cài [Python 3](https://www.python.org/) và [d
 Nope, app không, và sẽ không bao giờ hỗ trợ iOS vì chi phí ban đầu rất lớn: [100$/năm cho tài khoản Apple của lập trình viên](https://developer.apple.com/support/compare-memberships/) và PC/laptop Apple. Hackintosh? Không. Chỉ đơn giản là không.
 ### APK/EXE standalone?
 Sẽ có trong tương lai gần, nhưng kênh cập nhật sẽ không thông qua Google Play mà sẽ tiếp tục là GitHub vì Google yêu cầu 25$ phí đăng ký và độ trễ giữa đăng update-phân phối update. Nếu tôi cập nhật bản sửa lỗi, tôi muốn mọi người có thể nhận được nó sớm nhất.
+### "Nhưng mà app thâm nhập MyBK!!1!"
+*NhƯnG mÀ aPp ThÂm NhẬp MyBk!!1!*. Trong mã nguồn tôi từ line 160 tới line 193 là cách mà trình duyệt gửi/nhận thông tin từ máy chủ nhà trường. Nếu bạn muốn thì tự mở Developer Tools của trình duyệt lên và thao tác lại các bước từ đăng nhập Cổng Thông tin Sinh Viên qua SSO tới lấy thời khoá biểu. Nhớ kiểm tra từ Headers, Params tới Response (và chịu khó đọc JavaScript). 
