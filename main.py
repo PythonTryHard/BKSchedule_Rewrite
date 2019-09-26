@@ -81,8 +81,8 @@ if not os.path.exists('credential.json'):
     r = login.post('https://sso.hcmut.edu.vn/cas/login', data=data)
     page = BS(r.content, 'html5lib')
     if page.find('div', {'class': 'errors'}):
-        sys.exit('Sai thông tin MyBK, vui lòng chạy lại chương trình.')
-
+        input('Sai thông tin MyBK, vui lòng chạy lại chương trình.')
+        sys.exit(1)
     # Mật khẩu cấp hai (MK2) để mã hoá thông tin đăng nhập MyBK
     print('*' * 20, '\nLƯU Ý: VUI LÒNG THIẾT LẬP MẬT KHẨU CẤP HAI ĐỂ BẢO VỆ THÔNG TIN TÀI KHOẢN MYBK LƯU TRÊN MÁY')
     print('LƯU Ý: MẬT KHẨU CẤP HAI TỪ 8-16 KÝ TỰ ĐỂ TRÁNH TẤN CÔNG BRUTE-FORCE')
@@ -120,9 +120,11 @@ if not os.path.exists('credential.json'):
             print('Xong.')
             print('*' * 20)
         else:
-            sys.exit('Độ dài mật khẩu không khớp yêu cầu. vui lòng chạy lại chương trình')
+            input('Độ dài mật khẩu không khớp yêu cầu. vui lòng chạy lại chương trình')
+            sys.exit(1)
     else:
-        sys.exit('Mật khẩu cấp hai được nhập không khớp nhau. Vui lòng chạy lại chương trình.')
+        input('Mật khẩu cấp hai được nhập không khớp nhau. Vui lòng chạy lại chương trình.')
+        sys.exit(1)
 
 else:  # File 'credential.json' tồn tại
     print('Chào mừng quay trở lại!\n')
