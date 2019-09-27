@@ -6,3 +6,5 @@ dist
 *.spec
 bin
 .buildozer
+venv
+.idea

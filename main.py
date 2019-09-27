@@ -9,35 +9,34 @@ import datetime
 
 # Thư viện bên thứ 3
 from Crypto.Cipher import AES  # Các tác vụ liên quan mã hoá AES
-from Crypto.Util.Padding import pad  # Xử lý sơ bộ mật khẩu trước khi mã hoá AES
 import requests  # Xử lý yêu cầu mạng
 from bs4 import BeautifulSoup as BS  # Xử lý dữ liệu HTML
 from Crypto.Protocol.KDF import PBKDF2  # Hash
 
 # Các function để đỡ tốn thời gian
-def print_period(data):
+def print_period(period):
     print('-' * (width // 2))
-    print(f"Giờ học: [{data['giobd']}-{data['giokt']}] | Phòng [{data['phong1']}] | Cơ sở [{data['macoso']}]")
-    print(f"Môn: [{data['ma_mh']} - {data['ma_nhom']}] {data['ten_mh'].strip()}")
+    print(f"Giờ học: [{period['giobd']}-{period['giokt']}] | Phòng [{period['phong1']}] | Cơ sở [{period['macoso']}]")
+    print(f"Môn: [{period['ma_mh']} - {period['ma_nhom']}] {period['ten_mh'].strip()}")
     return
 
 
 def iso_year_start(iso_year):
-    "The gregorian calendar date of the first day of the given ISO year"
+    """The gregorian calendar date of the first day of the given ISO year"""
     fourth_jan = datetime.date(iso_year, 1, 4)
     delta = datetime.timedelta(fourth_jan.isoweekday() - 1)
     return fourth_jan - delta
 
 
 def iso_to_gregorian(iso_year, iso_week, iso_day):
-    "Gregorian calendar date for the given ISO year, week and day"
+    """Gregorian calendar date for the given ISO year, week and day"""
     year_start = iso_year_start(iso_year)
     return year_start + datetime.timedelta(days=iso_day - 1, weeks=iso_week - 1)
 
 
 # Splash screen chào mừng
 print(
-    '''
+'''
 0------------------------0
 |                        |
 |   BKSchedule Rewrite   |
@@ -64,13 +63,12 @@ if not os.path.exists('credential.json'):
     print('Khai báo tài khoản MyBK lần đầu, và chỉ lần đầu. ', 'Lưu ý: Nhập sai quá 3 lần tài khoản sẽ bị khoá')
     username = input('Tên MyBK: ')
     password = getpass.getpass('Mật khẩu: ')
-
     # Đăng nhập thử để bảo đảm đúng tài khoản
     login = requests.Session()
     r = login.get('https://sso.hcmut.edu.vn/cas/login?locale=en')
     page = BS(r.content, 'html5lib')
     token = (page.find('input', {'name': 'lt'})).attrs['value']
-    data = data = {
+    data = {
         'username': username,
         'password': password,
         'lt': token,
@@ -86,8 +84,8 @@ if not os.path.exists('credential.json'):
     # Mật khẩu cấp hai (MK2) để mã hoá thông tin đăng nhập MyBK
     print('*' * 20, '\nLƯU Ý: VUI LÒNG THIẾT LẬP MẬT KHẨU CẤP HAI ĐỂ BẢO VỆ THÔNG TIN TÀI KHOẢN MYBK LƯU TRÊN MÁY')
     print('LƯU Ý: MẬT KHẨU CẤP HAI TỪ 8-16 KÝ TỰ ĐỂ TRÁNH TẤN CÔNG BRUTE-FORCE')
-    second_level_password_1 = str.encode(getpass.getpass('Mật khẩu cấp hai: '))
-    second_level_password_2 = str.encode(getpass.getpass('Nhập lại mật khẩu cấp hai: '))
+    second_level_password_1 = getpass.getpass('Mật khẩu cấp hai: ')
+    second_level_password_2 = getpass.getpass('Nhập lại mật khẩu cấp hai: ')
 
     # Kiểm tra khớp MK2 và điều kiện độ dài trên 10 ký tự
     second_level_password_match = second_level_password_1 == second_level_password_2
@@ -125,7 +123,6 @@ if not os.path.exists('credential.json'):
     else:
         input('Mật khẩu cấp hai được nhập không khớp nhau. Vui lòng chạy lại chương trình.')
         sys.exit(1)
-
 else:  # File 'credential.json' tồn tại
     print('Chào mừng quay trở lại!\n')
     with open('credential.json', 'rb') as f:
@@ -141,7 +138,7 @@ else:  # File 'credential.json' tồn tại
         # Kiểm tra MK2
         attempt_counter = 1
         while True:
-            password_input = str.encode(getpass.getpass('Vui lòng nhập mật khẩu cấp hai: '))
+            password_input = getpass.getpass('Vui lòng nhập mật khẩu cấp hai: ')
             password_input_hash = PBKDF2(password_input, salt, dkLen=32)
             
             # Giải mã
@@ -160,6 +157,11 @@ else:  # File 'credential.json' tồn tại
             
             break
 ###############################################################################
+# Kiểm tra trước phòng ngừa
+if username == '' or password == '':
+    print('Đã có lỗi xảy ra: Username MyBK hoặc mật khẩu bị trống. Vui lòng xoá file credential.json và thử lại')
+    sys.exit(1)
+
 # Thời khoá biểu
 print('Đang tìm dữ liệu, vui lòng chờ...')
 # Khởi động session
@@ -169,7 +171,7 @@ r = s.get('https://sso.hcmut.edu.vn/cas/login?service=http://mybk.hcmut.edu.vn/s
 page = BS(r.content, 'html5lib')
 token = (page.find('input', {'name': 'lt'})).attrs['value']
 # Đăng nhập vào hệ thống và lợi dụng redirect để đỡ tốn công
-data = data = {
+data = {
     'username': username,
     'password': password,
     'lt': token,
@@ -271,7 +273,7 @@ while True:
         # Hiển thị
         for day in result:
             print(
-                f'\n{days[day][1]} ({(iso_to_gregorian(today.isocalendar()[0], week_number, day)).strftime(format="%d/%m/%Y")})'
+                f'\n{days[day][1]} ({(iso_to_gregorian(today.isocalendar()[0], week_number, day)).strftime("%d/%m/%Y")})'
             )
             if len(result[day]) != 0:
                 for i in result[day]:
