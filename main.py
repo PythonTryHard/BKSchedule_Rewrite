@@ -64,7 +64,7 @@ if not os.path.exists('credential.json'):
     username = input('Tên MyBK: ')
     password = getpass.getpass('Mật khẩu: ')
     # Đăng nhập thử để bảo đảm đúng tài khoản
-    login = requests.Session()
+    s = requests.Session()
     r = login.get('https://sso.hcmut.edu.vn/cas/login?locale=en')
     page = BS(r.content, 'html5lib')
     token = (page.find('input', {'name': 'lt'})).attrs['value']
@@ -76,7 +76,7 @@ if not os.path.exists('credential.json'):
         '_eventId': 'submit',
         'submit': 'Login',
     }
-    r = login.post('https://sso.hcmut.edu.vn/cas/login', data=data)
+    r = s.post('https://sso.hcmut.edu.vn/cas/login', data=data)
     page = BS(r.content, 'html5lib')
     if page.find('div', {'class': 'errors'}):
         input('Sai thông tin MyBK, vui lòng chạy lại chương trình.')
@@ -128,7 +128,6 @@ else:  # File 'credential.json' tồn tại
     with open('credential.json', 'rb') as f:
         # Nạp file JSON vào
         data = json.load(f)
-
         # Kéo dữ liệu ra và decode từ Base64
         credential = b64decode(data['credential'])
         salt = b64decode(data['salt'])
@@ -140,7 +139,7 @@ else:  # File 'credential.json' tồn tại
         while True:
             password_input = getpass.getpass('Vui lòng nhập mật khẩu cấp hai: ')
             password_input_hash = PBKDF2(password_input, salt, dkLen=32)
-            
+            password_input = os.urandom(128)
             # Giải mã
             cipher = AES.new(key=password_input_hash, mode=AES.MODE_EAX, nonce=nonce)
             try:
@@ -148,9 +147,9 @@ else:  # File 'credential.json' tồn tại
             except ValueError:
                 print('*' * 20, '\nMật khẩu cấp hai 2 sai.')
                 continue
-            data = json.loads(str(credential)[3:-2].replace('\\\'', '"'))
-            username = data['username']
-            password = data['password']
+            credential = json.loads(str(credential)[3:-2].replace('\\\'', '"'))
+            username = credential['username']
+            password = credential['password']
             
             # Huỷ dữ liệu JSON đã giải mã
             credential, data = [os.urandom(128) for i in range(2)] 
@@ -182,7 +181,7 @@ data = {
 s.post('https://sso.hcmut.edu.vn/cas/login?service=http://mybk.hcmut.edu.vn/stinfo/', data=data)
 
 # Huỷ dữ liệu đăng nhập ngay sau khi đăng nhập
-username, password  = [os.urandom(128) for i in range(2)]
+username, password, data  = [os.urandom(128) for i in range(3)]
 
 # Cập nhật header yêu cầu. NOTE: CHƯƠNG TRÌNH SẼ KHÔNG CHẠY NẾU KHÔNG CẬP NHẬT
 s.headers.update({'X-CSRF-TOKEN': token, 'X-Requested-With': 'XMLHttpRequest'})
@@ -197,7 +196,7 @@ r = s.post('https://mybk.hcmut.edu.vn/stinfo/lichthi/ajax_lichhoc', json={'_toke
 timetable = r.json()
 
 # Huỷ token 
-token = os.urandom(128)
+token, r, s, page = [os.urandom(128) for i in range(4)]
 ###############################################################################
 # Trả về thông tin cho người dùng
 # Tính thông tin ngày và tuần học
