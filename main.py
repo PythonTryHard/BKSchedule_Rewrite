@@ -65,7 +65,7 @@ if not os.path.exists('credential.json'):
     password = getpass.getpass('Mật khẩu: ')
     # Đăng nhập thử để bảo đảm đúng tài khoản
     s = requests.Session()
-    r = login.get('https://sso.hcmut.edu.vn/cas/login?locale=en')
+    r = s.get('https://sso.hcmut.edu.vn/cas/login?locale=en')
     page = BS(r.content, 'html5lib')
     token = (page.find('input', {'name': 'lt'})).attrs['value']
     data = {

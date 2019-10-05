@@ -18,6 +18,12 @@ Giả định bạn biết cách cài [Python 3](https://www.python.org/) và [d
 2. Cài dependency bằng `pip install -r requirements.txt`
 3. Chạy main.py bằng `python main.py` và làm theo hướng dẫn
 
+## Building trên Windows
+1. `pip install pyinstaller`
+2. `pyinstaller --onefile main.py`
+3. Chờ để compile, file trong folder `dist`
+
+
 ## FAQ
 ### Hỗ trợ iOS?
 Nope, app không, và sẽ không bao giờ hỗ trợ iOS vì chi phí ban đầu rất lớn: [100$/năm cho tài khoản Apple của lập trình viên](https://developer.apple.com/support/compare-memberships/) và PC/laptop Apple. Hackintosh? Không. Chỉ đơn giản là không.
