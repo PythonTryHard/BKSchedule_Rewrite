@@ -33,6 +33,39 @@ def iso_to_gregorian(iso_year, iso_week, iso_day):
     year_start = iso_year_start(iso_year)
     return year_start + datetime.timedelta(days=iso_day - 1, weeks=iso_week - 1)
 
+days = {
+    1: ('2', 'Thứ Hai'),
+    2: ('3', 'Thứ Ba'),
+    3: ('4', 'Thứ Tư'),
+    4: ('5', 'Thứ Năm'),
+    5: ('6', 'Thứ Sáu'),
+    6: ('7', 'Thứ Bảy'),
+    7: ('CN', "Chủ Nhật"),
+}
+
+def print_week(week_number, timetable, days=days):
+    print(f'Thời khoá biểu tuần {week_number}')
+    # Kiểm tra các môn hoc xem tuần này có học hay không và học thứ mấy
+    result = {}
+    for day in days:
+        match = []
+        for i in timetable:
+            if (str(week_number) in i['tuan_hoc']) and (days[day][0] == str(i['thu1'])):
+                match.append(i)
+        result[day] = match
+    # Hiển thị
+    for day in result:
+        print(
+            f'\n{days[day][1]} ({(iso_to_gregorian(today.isocalendar()[0], week_number, day)).strftime("%d/%m/%Y")})'
+        )
+        if len(result[day]) != 0:
+            for i in result[day]:
+                print_period(i)
+            print('-' * (width // 2))
+        else:
+            print(f'{"-" * (width // 2)}'
+                    '\nKhông có gì cả\n'
+                    f'{"-" * (width // 2)}')
 
 # Splash screen chào mừng
 print(
@@ -203,15 +236,6 @@ token, r, s, page = [os.urandom(128) for i in range(4)]
 today = date.today()
 
 week_number = today.isocalendar()[1]
-days = {
-    1: ('2', 'Thứ Hai'),
-    2: ('3', 'Thứ Ba'),
-    3: ('4', 'Thứ Tư'),
-    4: ('5', 'Thứ Năm'),
-    5: ('6', 'Thứ Sáu'),
-    6: ('7', 'Thứ Bảy'),
-    7: ('CN', "Chủ Nhật"),
-}
 day_number = days[today.isocalendar()[2]]
 date = today.strftime('%d/%m/%Y')
 
@@ -235,54 +259,43 @@ while True:
     print('\nChọn chức năng:' 
           '\n1 Xem thời khoá biểu hôm nay (mặc định)'
           '\n2 Xem thời khoá biểu tuần này'
+          '\n3 Xem thời khoá biểu tuần sau'
+          '\n4 Xem thời khoá biểu tuần bất kỳ'
           '\nq Thoát chương trình')
     menu_choice = (input('> ') or "1")
 
     # Xử lý theo chức năng
     width, _ = os.get_terminal_size()
-    
+    ########################################################################################################
     # Xem hôm nay
     if menu_choice == '1':
         # Tìm tất cả những môn học ngày hôm nay và tuần này
-        match = []
+        result = []
         for i in timetable:
             if (str(week_number) in i['tuan_hoc']) and (day_number[0] == str(i['thu1'])):
-                match.append(i)
+                result.append(i)
 
         # In ra
-        if len(match) != 0:
+        if len(result) != 0:
             print(f'\nThời khoá biểu hôm nay ({date})')
-            for i in match:
+            for i in result:
                 print_period(i)
             print('-' * (width // 2))
         else:  # Phỏng ngừa khi nghỉ
             print('Không học hôm nay, cẩn thận nếu hôm nay có lịch nghỉ/học bù/thi mà không biết')
-    
+    ########################################################################################################
     # Xem tuần này
     elif menu_choice == '2':
-        print(f'Thời khoá biểu tuần {week_number}')
-        result = {}
-        # Kiểm tra các môn hoc xem tuần này có học hay không và học thứ mấy
-        for day in days:
-            match = []
-            for i in timetable:
-                if (str(week_number) in i['tuan_hoc']) and (days[day][0] == str(i['thu1'])):
-                    match.append(i)
-            result[day] = match
-        # Hiển thị
-        for day in result:
-            print(
-                f'\n{days[day][1]} ({(iso_to_gregorian(today.isocalendar()[0], week_number, day)).strftime("%d/%m/%Y")})'
-            )
-            if len(result[day]) != 0:
-                for i in result[day]:
-                    print_period(i)
-                print('-' * (width // 2))
-            else:
-                print('-' * (width // 2))
-                print('Không có gì cả')
-                print('-' * (width // 2))
-    
-    #Thoát ra êm thấm
+        print_week(week_number=week_number, timetable=timetable)
+    ########################################################################################################
+    # Xem tuần sau
+    elif menu_choice == '3':
+        print_week(week_number=week_number + 1, timetable=timetable)
+    ########################################################################################################
+    # Xem tuần bất kỳ
+    elif menu_choice == '4':
+        week_choice = int(input('Nhập số tuần cần tra: '))
+        print_week(week_number=week_choice, timetable=timetable)
+    # Thoát ra êm thấm
     elif menu_choice.lower() == 'q':
         sys.exit(0)
