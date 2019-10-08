@@ -67,6 +67,21 @@ def print_week(week_number, timetable, days=days):
                     '\nKhông có gì cả\n'
                     f'{"-" * (width // 2)}')
 
+def print_day(week_number, day_number, timetable, days=days):
+    # Tìm tất cả những môn học ngày hôm nay
+    result = []
+    for i in timetable:
+        if (str(week_number) in i['tuan_hoc']) and (day_number == str(i['thu1'])):
+            result.append(i)
+
+    # In ra
+    if len(result) != 0:
+        print(f'\nThời khoá biểu hôm nay ({date})')
+        for i in result:
+            print_period(i)
+        print('-' * (width // 2))
+    else:  # Phỏng ngừa khi nghỉ
+        print('Không học hôm nay, cẩn thận nếu hôm nay có lịch nghỉ/học bù/thi mà không biết')
 # Splash screen chào mừng
 print(
 '''
@@ -236,7 +251,7 @@ token, r, s, page = [os.urandom(128) for i in range(4)]
 today = date.today()
 
 week_number = today.isocalendar()[1]
-day_number = days[today.isocalendar()[2]]
+day_number = (days[today.isocalendar()[2]])[0]
 date = today.strftime('%d/%m/%Y')
 
 print(f'\nHôm này ngày {date}, tuần học {week_number}')
@@ -256,46 +271,42 @@ else:
 # Vòng lặp chính
 while True:
     # Lựa chọn chức năng:
-    print('\nChọn chức năng:' 
-          '\n1 Xem thời khoá biểu hôm nay (mặc định)'
-          '\n2 Xem thời khoá biểu tuần này'
-          '\n3 Xem thời khoá biểu tuần sau'
-          '\n4 Xem thời khoá biểu tuần bất kỳ'
-          '\nq Thoát chương trình')
+    menu = {'1': 'Xem thời khoá biểu hôm nay (mặc định)',
+            '2': 'Xem thời khoá biểu ngày mai',
+            '3': 'Xem thời khoá biểu tuần này',
+            '4': 'Xem thời khoá biểu tuần sau',
+            '5': 'Xem thời khoá biểu tuần bất kỳ',
+            'q': 'Thoát chương trình'}
+    print('Chọn chức năng:')
+    for entry in menu:
+        print(f'{entry} {menu[entry]}')
     menu_choice = (input('> ') or "1")
 
     # Xử lý theo chức năng
     width, _ = os.get_terminal_size()
+    
     ########################################################################################################
     # Xem hôm nay
-    if menu_choice == '1':
-        # Tìm tất cả những môn học ngày hôm nay và tuần này
-        result = []
-        for i in timetable:
-            if (str(week_number) in i['tuan_hoc']) and (day_number[0] == str(i['thu1'])):
-                result.append(i)
-
-        # In ra
-        if len(result) != 0:
-            print(f'\nThời khoá biểu hôm nay ({date})')
-            for i in result:
-                print_period(i)
-            print('-' * (width // 2))
-        else:  # Phỏng ngừa khi nghỉ
-            print('Không học hôm nay, cẩn thận nếu hôm nay có lịch nghỉ/học bù/thi mà không biết')
+    if menu_choice == list(menu.keys())[0]:
+        print_day(week_number=week_number, day_number=day_number, timetable=timetable)
+    ########################################################################################################
+    # Xem ngày mai
+    elif menu_choice == list(menu.keys())[1]:
+        print_day(week_number=week_number, day_number=str(int(day_number) + 1), timetable=timetable)
     ########################################################################################################
     # Xem tuần này
-    elif menu_choice == '2':
+    elif menu_choice == list(menu.keys())[2]:
         print_week(week_number=week_number, timetable=timetable)
     ########################################################################################################
     # Xem tuần sau
-    elif menu_choice == '3':
+    elif menu_choice == list(menu.keys())[3]:
         print_week(week_number=week_number + 1, timetable=timetable)
     ########################################################################################################
     # Xem tuần bất kỳ
-    elif menu_choice == '4':
+    elif menu_choice == list(menu.keys())[4]:
         week_choice = int(input('Nhập số tuần cần tra: '))
         print_week(week_number=week_choice, timetable=timetable)
+    ########################################################################################################
     # Thoát ra êm thấm
     elif menu_choice.lower() == 'q':
         sys.exit(0)
