@@ -33,6 +33,8 @@ def iso_to_gregorian(iso_year, iso_week, iso_day):
     year_start = iso_year_start(iso_year)
     return year_start + datetime.timedelta(days=iso_day - 1, weeks=iso_week - 1)
 
+clear = lambda: os.system('cls' if os.name=='nt' else 'clear')
+
 days = {
     1: ('2', 'Thứ Hai'),
     2: ('3', 'Thứ Ba'),
@@ -44,6 +46,7 @@ days = {
 }
 
 def print_week(week_number, timetable, days=days):
+    clear()
     print(f'Thời khoá biểu tuần {week_number}')
     # Kiểm tra các môn hoc xem tuần này có học hay không và học thứ mấy
     result = {}
@@ -69,6 +72,7 @@ def print_week(week_number, timetable, days=days):
 
 def print_day(week_number, day_number, timetable, days=days):
     # Tìm tất cả những môn học ngày hôm nay
+    clear()
     result = []
     for i in timetable:
         if (str(week_number) in i['tuan_hoc']) and (day_number == str(i['thu1'])):
