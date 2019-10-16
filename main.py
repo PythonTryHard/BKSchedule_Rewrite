@@ -249,6 +249,7 @@ timetable = r.json()
 
 # Huỷ token 
 token, r, s, page = [os.urandom(128) for i in range(4)]
+
 ###############################################################################
 # Trả về thông tin cho người dùng
 # Tính thông tin ngày và tuần học
@@ -267,7 +268,7 @@ if len(timetable) != 1:
     for i in timetable:
         print(f"{timetable.index(i) + 1 :_>2} {i['ten_hocky']}")
     choice = int(input('Chọn thời khoá biểu để kiểm tra (Bấm Enter để chọn số 1): ') or 1) - 1
-    timetable = timetable[choice][0]['tkb']
+    timetable = timetable[choice]['tkb']
 else:
     print(timetable[0]['ten_hocky'])
     timetable = timetable[0]['tkb']
