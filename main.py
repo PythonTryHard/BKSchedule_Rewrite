@@ -70,7 +70,7 @@ def print_week(week_number, timetable, days=days):
                     '\nKhông có gì cả\n'
                     f'{"-" * (width // 2)}')
 
-def print_day(week_number, day_number, timetable, days=days):
+def print_day(week_number, day_number, timetable, date, days=days):
     # Tìm tất cả những môn học ngày hôm nay
     clear()
     result = []
@@ -80,7 +80,7 @@ def print_day(week_number, day_number, timetable, days=days):
 
     # In ra
     if len(result) != 0:
-        print(f'\nThời khoá biểu hôm nay ({date})')
+        print(f'\nThời khoá biểu ngày {date}')
         for i in result:
             print_period(i)
         print('-' * (width // 2))
@@ -257,7 +257,6 @@ today = date.today()
 
 week_number = today.isocalendar()[1]
 day_number = (days[today.isocalendar()[2]])[0]
-date = today.strftime('%d/%m/%Y')
 
 print(f'\nHôm này ngày {date}, tuần học {week_number}')
 
@@ -293,24 +292,33 @@ while True:
     ########################################################################################################
     # Xem hôm nay
     if menu_choice == list(menu.keys())[0]:
-        print_day(week_number=week_number, day_number=day_number, timetable=timetable)
+        print_day(week_number=week_number,
+                  day_number=day_number, 
+                  timetable=timetable, 
+                  date=today.strftime('%d/%m/%Y'))
     ########################################################################################################
     # Xem ngày mai
     elif menu_choice == list(menu.keys())[1]:
-        print_day(week_number=week_number, day_number=str(int(day_number) + 1), timetable=timetable)
+        print_day(week_number=week_number,
+                  day_number=str(int(day_number) + 1),
+                  timetable=timetable,
+                  date=(today + datetime.timedelta(1)).strftime('%d/%m/%Y'))
     ########################################################################################################
     # Xem tuần này
     elif menu_choice == list(menu.keys())[2]:
-        print_week(week_number=week_number, timetable=timetable)
+        print_week(week_number=week_number,
+                   timetable=timetable)
     ########################################################################################################
     # Xem tuần sau
     elif menu_choice == list(menu.keys())[3]:
-        print_week(week_number=week_number + 1, timetable=timetable)
+        print_week(week_number=week_number + 1,
+                   timetable=timetable)
     ########################################################################################################
     # Xem tuần bất kỳ
     elif menu_choice == list(menu.keys())[4]:
         week_choice = int(input('Nhập số tuần cần tra: '))
-        print_week(week_number=week_choice, timetable=timetable)
+        print_week(week_number=week_choice,
+                   timetable=timetable)
     ########################################################################################################
     # Thoát ra êm thấm
     elif menu_choice.lower() == 'q':
