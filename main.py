@@ -16,7 +16,9 @@ from Crypto.Protocol.KDF import PBKDF2  # Hash
 # Các function để đỡ tốn thời gian
 def print_period(period):
     print('-' * (width // 2))
-    print(f"Giờ học: [{period['giobd']}-{period['giokt']}] | Phòng [{period['phong1']}] | Cơ sở [{period['macoso']}]")
+    print(
+        f"Giờ học: [{period['giobd']}-{period['giokt']}] | Phòng [{period['phong1']}] | Cơ sở [{period['macoso']}]"
+    )
     print(f"Môn: [{period['ma_mh']} - {period['ma_nhom']}] {period['ten_mh'].strip()}")
     return
 
@@ -33,7 +35,8 @@ def iso_to_gregorian(iso_year, iso_week, iso_day):
     year_start = iso_year_start(iso_year)
     return year_start + datetime.timedelta(days=iso_day - 1, weeks=iso_week - 1)
 
-clear = lambda: os.system('cls' if os.name=='nt' else 'clear')
+
+clear = lambda: os.system('cls' if os.name == 'nt' else 'clear')
 
 days = {
     1: ('2', 'Thứ Hai'),
@@ -44,6 +47,7 @@ days = {
     6: ('7', 'Thứ Bảy'),
     7: ('CN', "Chủ Nhật"),
 }
+
 
 def print_week(week_number, timetable, days=days):
     clear()
@@ -66,9 +70,8 @@ def print_week(week_number, timetable, days=days):
                 print_period(i)
             print('-' * (width // 2))
         else:
-            print(f'{"-" * (width // 2)}'
-                    '\nKhông có gì cả\n'
-                    f'{"-" * (width // 2)}')
+            print(f'{"-" * (width // 2)}' '\nKhông có gì cả\n' f'{"-" * (width // 2)}')
+
 
 def print_day(week_number, day_number, timetable, date, days=days):
     # Tìm tất cả những môn học ngày hôm nay
@@ -86,9 +89,11 @@ def print_day(week_number, day_number, timetable, date, days=days):
         print('-' * (width // 2))
     else:  # Phỏng ngừa khi nghỉ
         print('Không học hôm nay, cẩn thận nếu hôm nay có lịch nghỉ/học bù/thi mà không biết')
+
+
 # Splash screen chào mừng
 print(
-'''
+    '''
 0------------------------0
 |                        |
 |   BKSchedule Rewrite   |
@@ -112,7 +117,10 @@ print(
 # Đăng nhập ứng dụng
 if not os.path.exists('credential.json'):
     # Thông tin đăng nhập MyBK
-    print('Khai báo tài khoản MyBK lần đầu, và chỉ lần đầu. ', 'Lưu ý: Nhập sai quá 3 lần tài khoản sẽ bị khoá')
+    print(
+        'Khai báo tài khoản MyBK lần đầu, và chỉ lần đầu. ',
+        'Lưu ý: Nhập sai quá 3 lần tài khoản sẽ bị khoá',
+    )
     username = input('Tên MyBK: ')
     password = getpass.getpass('Mật khẩu: ')
     # Đăng nhập thử để bảo đảm đúng tài khoản
@@ -134,7 +142,10 @@ if not os.path.exists('credential.json'):
         input('Sai thông tin MyBK, vui lòng chạy lại chương trình.')
         sys.exit(1)
     # Mật khẩu cấp hai (MK2) để mã hoá thông tin đăng nhập MyBK
-    print('*' * 20, '\nLƯU Ý: VUI LÒNG THIẾT LẬP MẬT KHẨU CẤP HAI ĐỂ BẢO VỆ THÔNG TIN TÀI KHOẢN MYBK LƯU TRÊN MÁY')
+    print(
+        '*' * 20,
+        '\nLƯU Ý: VUI LÒNG THIẾT LẬP MẬT KHẨU CẤP HAI ĐỂ BẢO VỆ THÔNG TIN TÀI KHOẢN MYBK LƯU TRÊN MÁY',
+    )
     print('LƯU Ý: MẬT KHẨU CẤP HAI TỪ 8-16 KÝ TỰ ĐỂ TRÁNH TẤN CÔNG BRUTE-FORCE')
     second_level_password_1 = getpass.getpass('Mật khẩu cấp hai: ')
     second_level_password_2 = getpass.getpass('Nhập lại mật khẩu cấp hai: ')
@@ -153,7 +164,9 @@ if not os.path.exists('credential.json'):
             # Mã hoá ID MyBK bằng AES và MK2
             cipher = AES.new(key=key, mode=AES.MODE_EAX)
 
-            credential_string = str.encode(json.dumps(str({"username": username, "password": password})))
+            credential_string = str.encode(
+                json.dumps(str({"username": username, "password": password}))
+            )
 
             encrypted_credential, tag = cipher.encrypt_and_digest(credential_string)
 
@@ -165,7 +178,12 @@ if not os.path.exists('credential.json'):
 
             # Ghi file lưu dữ liệu
             with open('credential.json', 'w+') as f:
-                data = {'credential': encrypted_credential, 'tag': tag, 'salt': salt, 'nonce': nonce}
+                data = {
+                    'credential': encrypted_credential,
+                    'tag': tag,
+                    'salt': salt,
+                    'nonce': nonce,
+                }
                 json.dump(data, indent=4, fp=f)
             print('Xong.')
             print('*' * 20)
@@ -202,15 +220,17 @@ else:  # File 'credential.json' tồn tại
             credential = json.loads(str(credential)[3:-2].replace('\\\'', '"'))
             username = credential['username']
             password = credential['password']
-            
+
             # Huỷ dữ liệu JSON đã giải mã
-            credential, data = [os.urandom(128) for i in range(2)] 
-            
+            credential, data = [os.urandom(128) for i in range(2)]
+
             break
 ###############################################################################
 # Kiểm tra trước phòng ngừa
 if username == '' or password == '':
-    print('Đã có lỗi xảy ra: Username MyBK hoặc mật khẩu bị trống. Vui lòng xoá file credential.json và thử lại')
+    print(
+        'Đã có lỗi xảy ra: Username MyBK hoặc mật khẩu bị trống. Vui lòng xoá file credential.json và thử lại'
+    )
     sys.exit(1)
 
 # Thời khoá biểu
@@ -233,7 +253,7 @@ data = {
 s.post('https://sso.hcmut.edu.vn/cas/login?service=http://mybk.hcmut.edu.vn/stinfo/', data=data)
 
 # Huỷ dữ liệu đăng nhập ngay sau khi đăng nhập
-username, password, data  = [os.urandom(128) for i in range(3)]
+username, password, data = [os.urandom(128) for i in range(3)]
 
 # Cập nhật header yêu cầu. NOTE: CHƯƠNG TRÌNH SẼ KHÔNG CHẠY NẾU KHÔNG CẬP NHẬT
 s.headers.update({'X-CSRF-TOKEN': token, 'X-Requested-With': 'XMLHttpRequest'})
@@ -247,7 +267,7 @@ token = page.find('meta', {'name': '_token'}).attrs['content']
 r = s.post('https://mybk.hcmut.edu.vn/stinfo/lichthi/ajax_lichhoc', json={'_token': token})
 timetable = r.json()
 
-# Huỷ token 
+# Huỷ token
 token, r, s, page = [os.urandom(128) for i in range(4)]
 
 ###############################################################################
@@ -275,50 +295,53 @@ else:
 # Vòng lặp chính
 while True:
     # Lựa chọn chức năng:
-    menu = {'1': 'Xem thời khoá biểu hôm nay (mặc định)',
-            '2': 'Xem thời khoá biểu ngày mai',
-            '3': 'Xem thời khoá biểu tuần này',
-            '4': 'Xem thời khoá biểu tuần sau',
-            '5': 'Xem thời khoá biểu tuần bất kỳ',
-            'q': 'Thoát chương trình'}
+    menu = {
+        '1': 'Xem thời khoá biểu hôm nay (mặc định)',
+        '2': 'Xem thời khoá biểu ngày mai',
+        '3': 'Xem thời khoá biểu tuần này',
+        '4': 'Xem thời khoá biểu tuần sau',
+        '5': 'Xem thời khoá biểu tuần bất kỳ',
+        'q': 'Thoát chương trình',
+    }
     print('Chọn chức năng:')
     for entry in menu:
         print(f'{entry} {menu[entry]}')
-    menu_choice = (input('> ') or "1")
+    menu_choice = input('> ') or "1"
 
     # Xử lý theo chức năng
     width, _ = os.get_terminal_size()
-    
+
     ########################################################################################################
     # Xem hôm nay
     if menu_choice == list(menu.keys())[0]:
-        print_day(week_number=week_number,
-                  day_number=day_number, 
-                  timetable=timetable, 
-                  date=today.strftime('%d/%m/%Y'))
+        print_day(
+            week_number=week_number,
+            day_number=day_number,
+            timetable=timetable,
+            date=today.strftime('%d/%m/%Y'),
+        )
     ########################################################################################################
     # Xem ngày mai
     elif menu_choice == list(menu.keys())[1]:
-        print_day(week_number=week_number,
-                  day_number=str(int(day_number) + 1),
-                  timetable=timetable,
-                  date=(today + datetime.timedelta(1)).strftime('%d/%m/%Y'))
+        print_day(
+            week_number=week_number,
+            day_number=str(int(day_number) + 1),
+            timetable=timetable,
+            date=(today + datetime.timedelta(1)).strftime('%d/%m/%Y'),
+        )
     ########################################################################################################
     # Xem tuần này
     elif menu_choice == list(menu.keys())[2]:
-        print_week(week_number=week_number,
-                   timetable=timetable)
+        print_week(week_number=week_number, timetable=timetable)
     ########################################################################################################
     # Xem tuần sau
     elif menu_choice == list(menu.keys())[3]:
-        print_week(week_number=week_number + 1,
-                   timetable=timetable)
+        print_week(week_number=week_number + 1, timetable=timetable)
     ########################################################################################################
     # Xem tuần bất kỳ
     elif menu_choice == list(menu.keys())[4]:
         week_choice = int(input('Nhập số tuần cần tra: '))
-        print_week(week_number=week_choice,
-                   timetable=timetable)
+        print_week(week_number=week_choice, timetable=timetable)
     ########################################################################################################
     # Thoát ra êm thấm
     elif menu_choice.lower() == 'q':
