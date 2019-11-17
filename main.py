@@ -349,12 +349,16 @@ while True:
     ########################################################################################################
     # Xem ngày mai
     elif menu_choice == list(menu.keys())[1]:
-        print_day(
-            week_number=week_number,
-            day_number=str(int(day_number) + 1),
-            timetable=timetable,
-            date=(today + datetime.timedelta(1)).strftime('%d/%m/%Y'),
-        )
+        if day_number == 'CN':
+            clear()
+            print('Hôm nay Chủ Nhật, vui lòng dùng chức năng "Kiểm tra tuần sau" để chắc chắn')
+        else:
+            print_day(
+                week_number=week_number,
+                day_number=str(int(day_number) + 1),
+                timetable=timetable,
+                date=(today + datetime.timedelta(1)).strftime('%d/%m/%Y'),
+            )
     ########################################################################################################
     # Xem tuần này
     elif menu_choice == list(menu.keys())[2]:
