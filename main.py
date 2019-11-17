@@ -25,7 +25,7 @@ def print_period(period):
 
 def iso_year_start(iso_year):
     """The gregorian calendar date of the first day of the given ISO year"""
-    fourth_jan = datetime.date(iso_year, 1, 4)
+    fourth_jan = date(iso_year, 1, 4)
     delta = datetime.timedelta(fourth_jan.isoweekday() - 1)
     return fourth_jan - delta
 
@@ -235,41 +235,67 @@ if username == '' or password == '':
 
 # Thời khoá biểu
 print('Đang tìm dữ liệu, vui lòng chờ...')
-# Khởi động session
-s = requests.Session()
-# Lấy OTP từ trang đăng nhập trung tâm
-r = s.get('https://sso.hcmut.edu.vn/cas/login?service=http://mybk.hcmut.edu.vn/stinfo/')
-page = BS(r.content, 'html5lib')
-token = (page.find('input', {'name': 'lt'})).attrs['value']
-# Đăng nhập vào hệ thống và lợi dụng redirect để đỡ tốn công
-data = {
-    'username': username,
-    'password': password,
-    'lt': token,
-    'execution': 'e1s1',
-    '_eventId': 'submit',
-    'submit': 'Login',
-}
-s.post('https://sso.hcmut.edu.vn/cas/login?service=http://mybk.hcmut.edu.vn/stinfo/', data=data)
 
-# Huỷ dữ liệu đăng nhập ngay sau khi đăng nhập
-username, password, data = [os.urandom(128) for i in range(3)]
+try:
+    # Khởi động session
+    s = requests.Session()
+    # Lấy OTP từ trang đăng nhập trung tâm
+    r = s.get('https://sso.hcmut.edu.vn/cas/login?service=http://mybk.hcmut.edu.vn/stinfo/')
+    page = BS(r.content, 'html5lib')
+    token = (page.find('input', {'name': 'lt'})).attrs['value']
+    # Đăng nhập vào hệ thống và lợi dụng redirect để đỡ tốn công
+    data = {
+        'username': username,
+        'password': password,
+        'lt': token,
+        'execution': 'e1s1',
+        '_eventId': 'submit',
+        'submit': 'Login',
+    }
+    s.post('https://sso.hcmut.edu.vn/cas/login?service=http://mybk.hcmut.edu.vn/stinfo/', data=data)
 
-# Cập nhật header yêu cầu. NOTE: CHƯƠNG TRÌNH SẼ KHÔNG CHẠY NẾU KHÔNG CẬP NHẬT
-s.headers.update({'X-CSRF-TOKEN': token, 'X-Requested-With': 'XMLHttpRequest'})
+    # Huỷ dữ liệu đăng nhập ngay sau khi đăng nhập
+    username, password, data = [os.urandom(128) for i in range(3)]
 
-# Lấy OTP cho thời khoá biểu
-r = s.get('https://mybk.hcmut.edu.vn/stinfo/lichhoc')
-page = BS(r.content, 'html5lib')
-token = page.find('meta', {'name': '_token'}).attrs['content']
+    # Cập nhật header yêu cầu. NOTE: CHƯƠNG TRÌNH SẼ KHÔNG CHẠY NẾU KHÔNG CẬP NHẬT
+    s.headers.update({'X-CSRF-TOKEN': token, 'X-Requested-With': 'XMLHttpRequest'})
 
-# Lấy thời khoá biểu (JSON)
-r = s.post('https://mybk.hcmut.edu.vn/stinfo/lichthi/ajax_lichhoc', json={'_token': token})
-timetable = r.json()
+    # Lấy OTP cho thời khoá biểu
+    r = s.get('https://mybk.hcmut.edu.vn/stinfo/lichhoc')
+    page = BS(r.content, 'html5lib')
+    token = page.find('meta', {'name': '_token'}).attrs['content']
 
-# Huỷ token
-token, r, s, page = [os.urandom(128) for i in range(4)]
+    # Lấy thời khoá biểu (JSON)
+    r = s.post('https://mybk.hcmut.edu.vn/stinfo/lichthi/ajax_lichhoc', json={'_token': token})
+    timetable = r.json()
 
+    # Cache lại phòng ngừa
+    with open('cached_data.json', 'w') as f:
+        json.dump(timetable, f)
+
+    # Huỷ token
+    token, r, s, page = [os.urandom(128) for i in range(4)]
+except requests.RequestException:
+    # Thông báo cho người dùng
+    print('Đã có lỗi xảy ra trong quá trình tìm kiếm dữ liệu.\n'
+          f'Sử dụng dữ liệu đã lưu sẵn', end='')
+    try:
+        # Load lại file đã cache
+        update_time = datetime.datetime.fromtimestamp(os.path.getmtime("cached_data.json")).strftime('%d/%m/%Y')
+        print(f' (Cập nhật lần cuối: {update_time})')
+        with open('cached_data.json') as f:
+            timetable = json.load(f)
+    
+    except FileNotFoundError:
+        # 404 Not found
+        input('\nKhông tìm thấy dữ liệu sao lưu. Vui lòng kết nối mạng để thực hiện kiểm tra.')
+        sys.exit(1)
+    except:
+        # Generic
+        input('\nĐã có lỗi xảy ra trong quá trình truy xuất dữ liệu sao lưu, vui lòng xóa file "cached_data.json"'
+              '\nNếu lỗi vẫn còn xảy ra, vui lòng đi tới https://github.com/PythonTryHard/BKSchedule_Rewrite/issues và mở Issue mới.')
+    
+    
 ###############################################################################
 # Trả về thông tin cho người dùng
 # Tính thông tin ngày và tuần học
@@ -278,7 +304,7 @@ today = date.today()
 week_number = today.isocalendar()[1]
 day_number = (days[today.isocalendar()[2]])[0]
 
-print(f'\nHôm này ngày {date}, tuần học {week_number}')
+print(f'\nHôm này ngày {today.strftime("%d/%m/%Y")}, tuần học {week_number}')
 
 # Rút TKB ra khỏi mớ hỗn độn
 print(f'\nTìm thấy {len(timetable)} thời khoá biểu: ', end='')
