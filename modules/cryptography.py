@@ -48,15 +48,20 @@ class Cryptography():
         '''
         # Generate the salt from OS' designated source of randomness
         salt = os.urandom(2048)
+        
         # Hash the password using PBKDF2-HMAC, SHA-512
         key = self._PBKDF2_hash(password, salt)
+        
         # Initialize the cipher
         cipher = AES.new(key=key,
                          mode=AES.MODE_EAX)
+        
         # Retrieve the nonce
         nonce = cipher.nonce
+        
         # Encrypt the data
         encrypted_data, tag = cipher.encrypt_and_digest(data.encode())
+        
         # Convert all data back to B64 for ease of storage
         result = {'encrypted_data': b64e(encrypted_data),
                   'initial_state': {
@@ -83,10 +88,13 @@ class Cryptography():
         '''
         # Decode all the B64 back to string
         encrypted_data,nonce,salt,tag = [b64d(i) for i in (encrypted_data,nonce,salt,tag)]
+        
         # Retrieve the initial hash
         password = self._PBKDF2_hash(password, salt)
+        
         # Initialize the cipher back the known state
         cipher = AES.new(key=password, mode=AES.MODE_EAX, nonce=nonce)
+        
         # Decrypt:
         decrypted_data = cipher.decrypt_and_verify(encrypted_data, tag)
         return decrypted_data

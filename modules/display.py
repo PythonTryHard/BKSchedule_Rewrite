@@ -25,11 +25,13 @@ class Display():
         # Initial sanity check for myself
         if data_type not in ('daily', 'weekly'):
             raise ValueError('data_type only accepts "daily" or "weekly"')
+        
         # Checking data type
         if data_type == 'daily':
             header = self.weekly_table_header
         else:
             header = self.daily_table_header
+        
         # Printing
         print(tabulate.tabulate(table, headers=header, tablefmt='grid'))
         return
