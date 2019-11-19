@@ -4,6 +4,7 @@ import json
 import getpass
 import sys
 from datetime import datetime, date, time
+import random
 
 # External libraries
 import requests
@@ -92,6 +93,7 @@ else:
                                                    tag=tag)
             # Destroy the correct key
             second_pw = os.urandom(1)
+            print('Giải mã thành công.')
             break
         except ValueError:
             print('Sai mật khẩu cấp hai, không thể giải mã.')
@@ -106,28 +108,68 @@ if any([i == '' for i in (username, password)]):
 
 # Create new session to log in
 s = requests.Session()
+
+# :)
+header = ['Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:70.0) Gecko/20100101 Firefox/70.0',
+          'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:70.0) Gecko/20100101 Firefox/70.0']
+s.headers.update({'User-Agent': f'{random.choice(header)}'})
+
 try:
-    # Log in to SSO for cookie
-    r = s.get('https://sso.hcmut.edu.vn/cas/login?service=http://mybk.hcmut.edu.vn/stinfo/')
-    page = BS(r.content, 'html5lib')
-    token = (page.find('input', {'name': 'lt'})).attrs['value']
-    data = {'username': username, 'password': password, 'lt': token,
-            'execution': 'e1s1', '_eventId': 'submit', 'submit': 'Login'}
-    s.post('https://sso.hcmut.edu.vn/cas/login?service=http://mybk.hcmut.edu.vn/stinfo/', data=data)
-    r = s.get('https://mybk.hcmut.edu.vn/stinfo/lichhoc')
+    # Grabbing the SSO page
+    print('Đăng nhập vào hệ thống...')
+    r = s.get('https://sso.hcmut.edu.vn/cas/login?locale=en')
+    r = BS(r.content, 'html5lib')
+    
+    # Grabbing data needed for logging in
+    token = (r.find('input', {'name': 'lt'})).attrs['value']
+    data = {'username': username,
+            'password': password,
+            'lt': token, # Token is one-time
+            'execution': 'e1s1',
+            '_eventId': 'submit',
+            'submit': 'Login'}
+    
+    # Login and check for validity of session
+    r = s.post('https://sso.hcmut.edu.vn/cas/login?locale=en', data=data)
+    r = BS(r.content, 'html5lib')
+    
+    # In case of failure...
+    if r.find('div', {'class': 'errors'}):
+        # Remove the faulty credential file
+        os.remove('credential.json')\
 
-    # Destroy login info after finishing since now we're using cookie
-    username, password, data = [os.urandom(1) for i in range(3)]
+        # Deliver the final error message
+        error_message = 'Sai thông tin MyBK.'
+        if first_run:
+            exit(f'{error_message}')
+        else: # A rare case, hopefully
+            exit(f'{error_message}. Liệu bạn có đổi mật khẩu MyBK?')
+    
+    # ...or success
+    else:
+        username, password, data = [os.urandom(1) for i in range(3)]
+    
+    # Preparation before grabbing the timetable
 
+    s.headers.update({'X-CSRF-TOKEN': token, 
+                      'X-Requested-With': 'XMLHttpRequest'})
+    
+    # This to emulate a user
+    print('Giả tạo một tí...')
+    s.get('https://sso.hcmut.edu.vn/cas/login?service=http://mybk.hcmut.edu.vn/stinfo/')
+    
     # Grabbing the token to get the timetable
+    print('Tải thời khóa biểu về...')
     r = s.get('https://mybk.hcmut.edu.vn/stinfo/lichhoc')
-    page = BS(r.content, 'html5lib')
-    token = page.find('meta', {'name': '_token'}).attrs['content']
+    r = BS(r.content, 'html5lib')
+    token = r.find('meta', {'name': '_token'}).attrs['content']
     r = s.post('https://mybk.hcmut.edu.vn/stinfo/lichthi/ajax_lichhoc', json={'_token': token})
+    
+    # Convert the jargon into a proper JSON dict
     timetable = r.json()
-
+    
     # Destroy the session altogether
-    token, r, s, page = [os.urandom(1) for i in range(4)]
+    token, r, s = [os.urandom(1) for i in range(3)]
 
     # Cache the data just in case
     cached_file = 'cached_data.json'
