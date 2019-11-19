@@ -114,6 +114,8 @@ header = ['Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:70.0) Gecko/20100101 Fir
           'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:70.0) Gecko/20100101 Firefox/70.0']
 s.headers.update({'User-Agent': f'{random.choice(header)}'})
 
+# Grabbing the timetable
+cached_file = 'cached_data.json'
 try:
     # Grabbing the SSO page
     print('Đăng nhập vào hệ thống...')
@@ -172,13 +174,12 @@ try:
     token, r, s = [os.urandom(1) for i in range(3)]
 
     # Cache the data just in case
-    cached_file = 'cached_data.json'
     with open(cached_file, 'w') as f:
         json.dump(timetable, f)
 
 except OSError: # Every single fucking error that can happen.
     print('Có lỗi trong quá trình kết nối. Dùng thông tin lưu sẵn... ', end='')
-    if not os.path.exists('cache_data.json'):
+    if not os.path.exists(cached_file):
         print() # Ending the previous print()
         exit('Không tìm thấy file lưu sẵn. Vui lòng kết nối mạng và thử lại')
     else:
