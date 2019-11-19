@@ -63,11 +63,11 @@ class Cryptography():
         encrypted_data, tag = cipher.encrypt_and_digest(data.encode())
         
         # Convert all data back to B64 for ease of storage
-        result = {'encrypted_data': b64e(encrypted_data),
+        result = {'encrypted_data': b64e(encrypted_data).decode('ascii'),
                   'initial_state': {
-                      'nonce': b64e(nonce),
-                      'salt': b64e(salt),
-                      'tag': b64e(tag)
+                      'nonce': b64e(nonce).decode('ascii'),
+                      'salt': b64e(salt).decode('ascii'),
+                      'tag': b64e(tag).decode('ascii')
                   }
                  }
         return result
