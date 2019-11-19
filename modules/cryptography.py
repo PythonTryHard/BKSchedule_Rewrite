@@ -96,5 +96,5 @@ class Cryptography():
         cipher = AES.new(key=password, mode=AES.MODE_EAX, nonce=nonce)
         
         # Decrypt:
-        decrypted_data = cipher.decrypt_and_verify(encrypted_data, tag)
+        decrypted_data = cipher.decrypt_and_verify(encrypted_data, tag).decode()
         return decrypted_data
