@@ -43,8 +43,8 @@ class Cryptography():
         - `result`: `dict` with the following KV pairs:
          - `encrypted_data`: `bytes`
          - `initial_state`: `dict`, containing information necessary to 
-         reinitiate the cipher back to known sate for decrypt
-
+         reinitiate the cipher back to known sate for decrypt. States includes
+         `nonce`, `salt` and `tag` stored as keys of the `initial_state` dict
         '''
         # Generate the salt from OS' designated source of randomness
         salt = os.urandom(2048)
