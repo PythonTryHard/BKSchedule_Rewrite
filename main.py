@@ -209,3 +209,20 @@ else:
     
     # Overwrite the big timetable for ease of handling for developer
     timetable = timetable[choice]['tkb']
+
+# Get today. Don't need to convert, we'll do it on the fly
+today = datetime.now()
+print(f'Hôm này ngày {today.strftime("%d/%m/%Y")}, tuần học {today.isocalendar()[1]}')
+
+# Display by default today and tomorrow's schedule and 
+print('\nLịch học hôm nay:')
+Display.display_table(table=Parser.parse(timetable=timetable,
+                                         iso_date= today.isocalendar(),
+                                         data_type='daily'),
+                      data_type='daily')
+
+print('\nLịch học ngày mai:')
+Display.display_table(table=Parser.parse(timetable=timetable,
+                                         iso_date=(today + timedelta(1)).isocalendar(),
+                                         data_type='daily'),
+                      data_type='daily')
