@@ -225,7 +225,7 @@ while True:
     # Print the menu entries and prompt for choice
     print()
     print('\n'.join([f'{i}| {menu[i]}' for i in list(menu.keys())]))
-    choice = input('Chọn chức năng: ')
+    choice = input('Chọn chức năng: ') or '1'
     
     # The big if branch for handling things
     # Display today's schedule 
