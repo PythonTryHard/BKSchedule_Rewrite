@@ -42,5 +42,6 @@ class Parser():
         
         # Filter down if requested for daily data
         if data_type == 'daily':
-            result = [entry[1:] for entry in result if (self.dotw_name[day] in entry[0])]
+            result = ([entry[1:] for entry in result if (self.dotw_name[day] in entry[0])] 
+                       or 'Nghỉ(?) Coi chừng học mà không biết.')
         return result

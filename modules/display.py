@@ -26,12 +26,17 @@ class Display():
         if data_type not in ('daily', 'weekly'):
             raise ValueError('data_type only accepts "daily" or "weekly"')
         
+        # In case table is a string
+        if isinstance(table, str):
+            print(table)
+            return
+
         # Checking data type
         if data_type == 'daily':
-            header = self.weekly_table_header
+            header = self.daily_table_header
             column = 3
         else:
-            header = self.daily_table_header
+            header = self.weekly_table_header
             column = 4
         # Printing
         print(tabulate.tabulate(table, 
