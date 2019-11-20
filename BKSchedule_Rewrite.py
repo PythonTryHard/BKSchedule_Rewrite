@@ -227,6 +227,10 @@ while True:
     print('\n'.join([f'{i}| {menu[i]}' for i in list(menu.keys())]))
     choice = input('Chọn chức năng: ') or '1'
     
+    # Defining the clear lambda
+    clear = lambda: os.system('cls' if os.name == 'nt' else 'clear')
+    clear()
+
     # The big if branch for handling things
     # Display today's schedule 
     if choice == list(menu.keys())[0]:
@@ -236,6 +240,7 @@ while True:
                                                  iso_date= today.isocalendar(),
                                                  data_type=type_),
                               data_type=type_)
+    
     # Display tomorrow's schedule
     elif choice == list(menu.keys())[1]:
         type_ = 'daily'
@@ -244,6 +249,7 @@ while True:
                                                  iso_date=(today + timedelta(1)).isocalendar(),
                                                  data_type=type_),
                               data_type=type_)
+    
     # Display this week's schedule 
     elif choice == list(menu.keys())[2]:
         type_ = 'weekly'
@@ -252,6 +258,7 @@ while True:
                                                  iso_date= today.isocalendar(),
                                                  data_type=type_),
                               data_type=type_)
+    
     # Display next week's schedule
     elif choice == list(menu.keys())[3]:
         type_ = 'weekly'
@@ -260,6 +267,7 @@ while True:
                                                  iso_date=(today + timedelta(7)).isocalendar(),
                                                  data_type=type_),
                               data_type=type_)
+    
     # Exit
     elif choice == list(menu.keys())[-1]:
         sys.exit()
