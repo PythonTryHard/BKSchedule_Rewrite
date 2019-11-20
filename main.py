@@ -188,3 +188,27 @@ except OSError: # Every single fucking error that can happen.
         print(f'(Cập nhật lần cuối: {last_updated})')
         with open(cached_file) as f:
             timetable = json.load(f)
+
+# Print out how many timetables found (Number can be greater than 1)
+print(f'\nTìm thấy {len(timetable)} thời khoá biểu: ', end='')
+
+# Handling the case of more than one timetable
+# Typical case of junior year or anyone with only one table
+if len(timetable) == 1:
+    print(timetable[0]['ten_hocky'])
+    timetable = timetable[0]['tkb']
+
+# For the more veterans. Never make assumptions of which timtable to use
+else: 
+    # Terminate the previous line
+    print() 
+    
+    # Printing the name of the table along with a handy index
+    for i in timetable:
+        print(f"{timetable.index(i) + 1 :_>2} {i['ten_hocky']}")
+    
+    # Minus one because Python counts from 0 while humans count from 1. Sheesh.
+    choice = int(input('Chọn thời khoá biểu để kiểm tra (Bấm Enter để chọn số 1): ') or 1) - 1
+    
+    # Overwrite the big timetable for ease of handling for developer
+    timetable = timetable[choice]['tkb']
