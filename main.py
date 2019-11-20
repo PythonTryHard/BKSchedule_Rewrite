@@ -3,7 +3,7 @@ import os
 import json
 import getpass
 import sys
-from datetime import datetime, date, time
+from datetime import datetime, date, time, timedelta
 import random
 
 # External libraries
@@ -14,11 +14,13 @@ from bs4 import BeautifulSoup as BS
 from modules.cryptography import Cryptography
 from modules.display import Display
 from modules.notifications import Notifications
+from modules.parser import Parser
 
 # Pre-initialization of modules
 Cryptography = Cryptography()
 Display = Display()
 Notifications = Notifications()
+Parser = Parser()
 
 # Functions to avoid code re-use
 def exit(message, error_code=1):
