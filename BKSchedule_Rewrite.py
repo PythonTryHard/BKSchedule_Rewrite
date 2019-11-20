@@ -212,17 +212,53 @@ else:
 
 # Get today. Don't need to convert, we'll do it on the fly
 today = datetime.now()
-print(f'Hôm này ngày {today.strftime("%d/%m/%Y")}, tuần học {today.isocalendar()[1]}')
+print(f'Hôm này ngày {today.strftime("%d/%m/%Y")}, tuần học {today.isocalendar()[1]}\n')
 
-# Display by default today and tomorrow's schedule and 
-print('\nLịch học hôm nay:')
-Display.display_table(table=Parser.parse(timetable=timetable,
-                                         iso_date= today.isocalendar(),
-                                         data_type='daily'),
-                      data_type='daily')
-
-print('\nLịch học ngày mai:')
-Display.display_table(table=Parser.parse(timetable=timetable,
-                                         iso_date=(today + timedelta(1)).isocalendar(),
-                                         data_type='daily'),
-                      data_type='daily')
+# Set up the menu
+menu = {'1': 'Xem lịch ngày hôm nay',
+        '2': 'Xem lịch ngày mai',
+        '3': 'Xem lịch *tuần* này',
+        '4': 'Xem lịch *tuần* sau',
+        'q': 'Exit'}
+# Main program loop
+while True:
+    # Print the menu entries and prompt for choice
+    print('\n'.join([f'{i}| {menu[i]}' for i in list(menu.keys())]))
+    choice = input('Chọn chức năng: ')
+    
+    # The big if branch for handling things
+    # Display today's schedule 
+    if choice == list(menu.keys())[0]:
+        type_ = 'daily'
+        print('\nLịch học hôm nay:')
+        Display.display_table(table=Parser.parse(timetable=timetable,
+                                                 iso_date= today.isocalendar(),
+                                                 data_type=type_),
+                              data_type=type_)
+    # Display tomorrow's schedule
+    elif choice == list(menu.keys())[1]:
+        type_ = 'daily'
+        print('\nLịch học ngày mai:')
+        Display.display_table(table=Parser.parse(timetable=timetable,
+                                                 iso_date=(today + timedelta(1)).isocalendar(),
+                                                 data_type=type_),
+                              data_type=type_)
+    # Display this week's schedule 
+    elif choice == list(menu.keys())[2]:
+        type_ = 'weekly'
+        print('\nLịch học tuần này:')
+        Display.display_table(table=Parser.parse(timetable=timetable,
+                                                 iso_date= today.isocalendar(),
+                                                 data_type=type_),
+                              data_type=type_)
+    # Display next week's schedule
+    elif choice == list(menu.keys())[3]:
+        type_ = 'weekly'
+        print('\nLịch học tuần sau:')
+        Display.display_table(table=Parser.parse(timetable=timetable,
+                                                 iso_date=(today + timedelta(7)).isocalendar(),
+                                                 data_type=type_),
+                              data_type=type_)
+    # Exit
+    elif choice == list(menu.keys())[-1]:
+        sys.exit()
