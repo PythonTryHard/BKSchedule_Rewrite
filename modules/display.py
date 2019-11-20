@@ -29,9 +29,13 @@ class Display():
         # Checking data type
         if data_type == 'daily':
             header = self.weekly_table_header
+            column = 3
         else:
             header = self.daily_table_header
-        
+            column = 4
         # Printing
-        print(tabulate.tabulate(table, headers=header, tablefmt='grid'))
+        print(tabulate.tabulate(table, 
+                                headers=header,
+                                tablefmt='grid',
+                                colalign=['center' for i in range(column)]))
         return
