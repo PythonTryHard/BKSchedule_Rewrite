@@ -30,7 +30,7 @@ class Parser():
         year, week, day = iso_date
 
         # Preliminary filtering for entries that falls into the given week
-        week_match = [i for i in timetable if (str(week) in i['tuan_hoc'])]
+        week_match = [i for i in timetable if (str(week) in i['tuan_hoc'].split('|'))]
 
         # Initial formatting for everything
         result = [[f'{self.dotw_name[entry["thu1"] - 1]}\n'# Date of the week
