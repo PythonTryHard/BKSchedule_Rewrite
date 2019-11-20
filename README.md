@@ -9,7 +9,6 @@ Phần mềm nguồn mở theo bản quyền GNU GPL v3.0
 * Nhẹ hơn rất nhiều do bản chất chỉ là 1 file script Python 3.
 * Bảo mật hoàn toàn thông tin MyBK bằng thuật toán mã hoá AES 256-bit và mật khẩu cấp 2.
 * Mã nguồn mở hoàn toàn để mọi người có thể kiểm tra và có thể học hỏi.
-* Chạy cross-platform Windows và Android.
 
 ## Cách cài đặt và chạy mã nguồn
 Giả định bạn biết cách cài [Python 3](https://www.python.org/) và [di chuyển trong Command Prompt](https://gocinfo.com/tim-hieu-command-prompt-cac-lenh-cmd-thong-dung-tren-windows-part-1.html#1-Lenh-cd-di-chuyen-den-mot-vi-tri-thu-muc-bat-ki) 
