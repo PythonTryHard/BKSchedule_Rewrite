@@ -212,7 +212,7 @@ else:
 
 # Get today. Don't need to convert, we'll do it on the fly
 today = datetime.now()
-print(f'Hôm này ngày {today.strftime("%d/%m/%Y")}, tuần học {today.isocalendar()[1]}\n')
+print(f'Hôm này ngày {today.strftime("%d/%m/%Y")}, tuần học {today.isocalendar()[1]}')
 
 # Set up the menu
 menu = {'1': 'Xem lịch ngày hôm nay',
@@ -223,6 +223,7 @@ menu = {'1': 'Xem lịch ngày hôm nay',
 # Main program loop
 while True:
     # Print the menu entries and prompt for choice
+    print()
     print('\n'.join([f'{i}| {menu[i]}' for i in list(menu.keys())]))
     choice = input('Chọn chức năng: ')
     
