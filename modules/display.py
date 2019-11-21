@@ -8,7 +8,7 @@ class Display():
         '''
         Initialize the table's headers
         '''
-        self.daily_table_header = ['Giờ học', 'Môn', 'Phòng']
+        self.daily_table_header = ['Giờ học', 'Phòng', 'Môn']
         self.weekly_table_header = ['Thứ'] + self.daily_table_header
 
     def display_table(self, table, data_type):
