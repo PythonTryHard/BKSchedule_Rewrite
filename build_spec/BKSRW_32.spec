@@ -3,8 +3,8 @@
 block_cipher = None
 
 
-a = Analysis(['BKSchedule_Rewrite.py'],
-             pathex=['F:\\dev\\timetable'],
+a = Analysis(['..\\BKSchedule_Rewrite.py'],
+             pathex=['build_spec'],
              binaries=[],
              datas=[],
              hiddenimports=[],
@@ -23,7 +23,7 @@ exe = EXE(pyz,
           a.zipfiles,
           a.datas,
           [],
-          name='BKSchedule_Rewrite_x86_64',
+          name='BKSchedule_Rewrite_x86',
           debug=False,
           bootloader_ignore_signals=False,
           strip=False,
