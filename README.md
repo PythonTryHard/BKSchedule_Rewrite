@@ -25,5 +25,5 @@ Có, nhưng kênh cập nhật sẽ là GitHub. APK hiện đang trong roadmap
 ### "Nhưng mà app thâm nhập MyBK!!1!"
 *NhƯnG mÀ aPp ThÂm NhẬp MyBk!!1!*. Trong mã nguồn tôi từ line 116 tới line 176 là cách mà trình duyệt gửi/nhận thông tin từ máy chủ nhà trường. Nếu bạn muốn thì tự mở Developer Tools của trình duyệt lên và thao tác lại các bước từ đăng nhập Cổng Thông tin Sinh Viên qua SSO tới lấy thời khoá biểu. Nhớ kiểm tra từ Headers, Params tới Response (và chịu khó đọc JavaScript). 
 
-# Attribution
+## Attribution
 Icon làm bởi [Freepik](https://www.flaticon.com/authors/freepik) từ [Flaticon](https://www.flaticon.com/)
