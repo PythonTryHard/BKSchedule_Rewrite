@@ -12,7 +12,7 @@ class Notifications():
             '|                        |\n'
             '|  Coder: PythonTryHard  |\n'
             '|  Lang : Python 3       |\n'
-            '|  Ver  : v1.0           |\n'
+            '|  Ver  : v2.0.1         |\n'
             '|                        |\n'
             '|  Phần mềm open-source  |\n'
             '|                        |\n'
