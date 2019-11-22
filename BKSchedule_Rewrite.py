@@ -120,10 +120,10 @@ try:
     r = BS(r.content, 'html5lib')
     
     # Grabbing data needed for logging in
-    token = (r.find('input', {'name': 'lt'})).attrs['value']
+    sso_token = (r.find('input', {'name': 'lt'})).attrs['value']
     data = {'username': username,
             'password': password,
-            'lt': token, # Token is one-time
+            'lt': sso_token, # Token is one-time
             'execution': 'e1s1',
             '_eventId': 'submit',
             'submit': 'Login'}
@@ -146,29 +146,31 @@ try:
     
     # ...or success
     else:
-        username, password, data = [os.urandom(1) for i in range(3)]
-    
-    # Preparation before grabbing the timetable
-
-    s.headers.update({'X-CSRF-TOKEN': token, 
-                      'X-Requested-With': 'XMLHttpRequest'})
+        del username, password, data
     
     # This to emulate a user
     print('Giả tạo một tí...')
-    s.get('https://sso.hcmut.edu.vn/cas/login?service=http://mybk.hcmut.edu.vn/stinfo/')
+    r = s.get('https://sso.hcmut.edu.vn/cas/login?service=http://mybk.hcmut.edu.vn/stinfo/')
+    r = BS(r.content, 'html5lib')
+    
+    # Preparation before grabbing the timetable
+    csrf_token = r.find('meta', {'name': '_token'}).attrs['content']
+    s.headers.update({'X-CSRF-TOKEN': csrf_token, 
+                      'X-Requested-With': 'XMLHttpRequest'})
     
     # Grabbing the token to get the timetable
     print('Tải thời khóa biểu về...')
     r = s.get('https://mybk.hcmut.edu.vn/stinfo/lichhoc')
     r = BS(r.content, 'html5lib')
-    token = r.find('meta', {'name': '_token'}).attrs['content']
-    r = s.post('https://mybk.hcmut.edu.vn/stinfo/lichthi/ajax_lichhoc', json={'_token': token})
+    
+    timetable_token = r.find('meta', {'name': '_token'}).attrs['content']
+    r = s.post('https://mybk.hcmut.edu.vn/stinfo/lichthi/ajax_lichhoc', json={'_token': timetable_token})
     
     # Convert the jargon into a proper JSON dict
     timetable = r.json()
     
     # Destroy the session altogether
-    token, r, s = [os.urandom(1) for i in range(3)]
+    del sso_token, csrf_token, timetable_token, r, s
 
     # Cache the data just in case
     with open(cached_file, 'w') as f:
