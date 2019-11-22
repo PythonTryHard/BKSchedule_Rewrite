@@ -4,7 +4,6 @@ import json
 import getpass
 import sys
 from datetime import datetime, date, time, timedelta
-import random
 
 # External libraries
 import requests
