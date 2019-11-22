@@ -58,7 +58,7 @@ if not os.path.exists('credential.json'):
 
             assert second_pw == second_pw_2
             # Destroy password confirmation variable to prevent leakage
-            second_pw_2 = os.urandom(1)
+            del second_pw_2
             break # Break out
         except AssertionError:
             print('Mật khẩu cấp hai được nhập không khớp nhau. Vui lòng thực hiện lại\n')
@@ -69,7 +69,7 @@ if not os.path.exists('credential.json'):
                                                password=second_pw)
     print('Mã hóa thành công thông tin MyBK của bạn')
     # Destroy second password and plain text data in memory for security
-    second_pw, user_credential= [os.urandom(1) for i in range(2)]
+    del second_pw, user_credential
 
     # Store the encrypted data
     with open('credential.json', 'w') as f:
@@ -94,7 +94,7 @@ else:
                                                    salt=salt,
                                                    tag=tag)
             # Destroy the correct key
-            second_pw = os.urandom(1)
+            del second_pw
             print('Giải mã thành công.')
             break
         except ValueError:
@@ -102,7 +102,7 @@ else:
 
     # Load decrypted data into variables and destroy the decrypted
     username, password = [json.loads(user_credential)[i] for i in ['username', 'password']]
-    user_credential = os.urandom(1)
+    del user_credential, nonce, salt, tag
 
 # Preliminary sanity check
 if any([i == '' for i in (username, password)]):
