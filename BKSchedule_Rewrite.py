@@ -153,23 +153,19 @@ try:
     r = BS(r.content, 'html5lib')
     
     # Preparation before grabbing the timetable
-    csrf_token = r.find('meta', {'name': '_token'}).attrs['content']
-    s.headers.update({'X-CSRF-TOKEN': csrf_token, 
+    token = r.find('meta', {'name': '_token'}).attrs['content']
+    s.headers.update({'X-CSRF-TOKEN': token, 
                       'X-Requested-With': 'XMLHttpRequest'})
     
-    # Grabbing the token to get the timetable
+    # Grabbing the token to get the timetable. CSRF Token here doubles as timetable token
     print('Tải thời khóa biểu về...')
-    r = s.get('https://mybk.hcmut.edu.vn/stinfo/lichhoc')
-    r = BS(r.content, 'html5lib')
-    
-    timetable_token = r.find('meta', {'name': '_token'}).attrs['content']
-    r = s.post('https://mybk.hcmut.edu.vn/stinfo/lichthi/ajax_lichhoc', json={'_token': timetable_token})
+    r = s.post('https://mybk.hcmut.edu.vn/stinfo/lichthi/ajax_lichhoc', json={'_token': token})
     
     # Convert the jargon into a proper JSON dict
     timetable = r.json()
     
     # Destroy the session altogether
-    del sso_token, csrf_token, timetable_token, r, s
+    del sso_token, token, r, s
 
     # Cache the data just in case
     with open(cached_file, 'w') as f:
