@@ -4,7 +4,6 @@ import json
 import getpass
 import sys
 from datetime import datetime, date, time, timedelta
-import random
 
 # External libraries
 import requests
@@ -58,7 +57,7 @@ if not os.path.exists('credential.json'):
 
             assert second_pw == second_pw_2
             # Destroy password confirmation variable to prevent leakage
-            second_pw_2 = os.urandom(1)
+            del second_pw_2
             break # Break out
         except AssertionError:
             print('Mật khẩu cấp hai được nhập không khớp nhau. Vui lòng thực hiện lại\n')
@@ -69,7 +68,7 @@ if not os.path.exists('credential.json'):
                                                password=second_pw)
     print('Mã hóa thành công thông tin MyBK của bạn')
     # Destroy second password and plain text data in memory for security
-    second_pw, user_credential= [os.urandom(1) for i in range(2)]
+    del second_pw, user_credential
 
     # Store the encrypted data
     with open('credential.json', 'w') as f:
@@ -94,7 +93,7 @@ else:
                                                    salt=salt,
                                                    tag=tag)
             # Destroy the correct key
-            second_pw = os.urandom(1)
+            del second_pw
             print('Giải mã thành công.')
             break
         except ValueError:
@@ -102,7 +101,7 @@ else:
 
     # Load decrypted data into variables and destroy the decrypted
     username, password = [json.loads(user_credential)[i] for i in ['username', 'password']]
-    user_credential = os.urandom(1)
+    del user_credential, nonce, salt, tag
 
 # Preliminary sanity check
 if any([i == '' for i in (username, password)]):
@@ -120,10 +119,10 @@ try:
     r = BS(r.content, 'html5lib')
     
     # Grabbing data needed for logging in
-    token = (r.find('input', {'name': 'lt'})).attrs['value']
+    sso_token = (r.find('input', {'name': 'lt'})).attrs['value']
     data = {'username': username,
             'password': password,
-            'lt': token, # Token is one-time
+            'lt': sso_token, # Token is one-time
             'execution': 'e1s1',
             '_eventId': 'submit',
             'submit': 'Login'}
@@ -146,29 +145,27 @@ try:
     
     # ...or success
     else:
-        username, password, data = [os.urandom(1) for i in range(3)]
-    
-    # Preparation before grabbing the timetable
-
-    s.headers.update({'X-CSRF-TOKEN': token, 
-                      'X-Requested-With': 'XMLHttpRequest'})
+        del username, password, data
     
     # This to emulate a user
     print('Giả tạo một tí...')
-    s.get('https://sso.hcmut.edu.vn/cas/login?service=http://mybk.hcmut.edu.vn/stinfo/')
-    
-    # Grabbing the token to get the timetable
-    print('Tải thời khóa biểu về...')
-    r = s.get('https://mybk.hcmut.edu.vn/stinfo/lichhoc')
+    r = s.get('https://sso.hcmut.edu.vn/cas/login?service=http://mybk.hcmut.edu.vn/stinfo/')
     r = BS(r.content, 'html5lib')
+    
+    # Preparation before grabbing the timetable
     token = r.find('meta', {'name': '_token'}).attrs['content']
+    s.headers.update({'X-CSRF-TOKEN': token, 
+                      'X-Requested-With': 'XMLHttpRequest'})
+    
+    # Grabbing the token to get the timetable. CSRF Token here doubles as timetable token
+    print('Tải thời khóa biểu về...')
     r = s.post('https://mybk.hcmut.edu.vn/stinfo/lichthi/ajax_lichhoc', json={'_token': token})
     
     # Convert the jargon into a proper JSON dict
     timetable = r.json()
     
     # Destroy the session altogether
-    token, r, s = [os.urandom(1) for i in range(3)]
+    del sso_token, token, r, s
 
     # Cache the data just in case
     with open(cached_file, 'w') as f:
