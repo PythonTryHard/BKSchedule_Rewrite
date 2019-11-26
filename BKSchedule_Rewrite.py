@@ -177,9 +177,12 @@ except OSError: # Every single fucking error that can happen.
         print() # Ending the previous print()
         exit('Không tìm thấy file lưu sẵn. Vui lòng kết nối mạng và thử lại')
     else:
+        # Get last updated time to notify user how fresh is the data
         last_updated = os.path.getmtime(cached_file)
         last_updated = datetime.fromtimestamp(last_updated).strftime('%d/%m/%Y')
         print(f'(Cập nhật lần cuối: {last_updated})')
+
+        # Loading the cached data
         with open(cached_file) as f:
             timetable = json.load(f)
 
